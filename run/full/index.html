@@ -1,0 +1,205 @@
+<HTML>
+<HEAD>
+	<TITLE>map map map map</TITLE>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+</HEAD>
+<BODY LEFTMARGIN=0 TOPMARGIN=0 RIGHTMARGIN=0 BOTTOMMARGIN=0 MARGINWIDTH=0 MARGINHEIGHT=0 BGCOLOR="#666666"> 
+
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%" HEIGHT="100%">
+		<TR>
+			<TD WIDTH="100%" VALIGN=TOP HEIGHT="100%" STYLE="background-repeat: no-repeat; background-image: url('/img2/top_bg.gif'); background-position: right top;">
+				<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH="100%">
+					<TR>
+						<TD><IMG SRC="/images/spacer.gif" WIDTH=299 HEIGHT=5 BORDER=0></TD>
+					</TR>
+					<TR>
+						<TD VALIGN=TOP ALIGN="CENTER">
+	<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0 WIDTH=750>
+		<TR>
+			
+			<TD ALIGN="center">
+			
+			<BR>
+	
+		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH="800"><TR><TD>
+		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4 WIDTH="100%" STYLE="border: 1px solid black;">
+			<TR>
+				<TD CLASS="boxheader" NOWRAP BGCOLOR="809CC9">Map</TD>
+			</TR>
+			<TR>
+				<TD VALIGN="TOP" CLASS="boxtextbox">
+		
+			<script src="//maps.googleapis.com/maps/api/js?key=" type="text/javascript"></script>
+		 <!--   <script src="markerclusterer.js" type="text/javascript"></script>-->
+          <script src="/map.js"></script>
+
+
+			<style type="text/css">
+			    v\:* {
+			      behavior:url(#default#VML);
+			    }
+				
+				.infoPop	{ font-family: verdana, arial, helvetica, sans, sans-serif, sans serif; font-size: 10pt; color: black; }
+				.infoTitle	{ font-size: 14pt; }
+				    
+		    </style>
+		    <html xmlns:v="urn:schemas-microsoft-com:vml">
+
+			<div id="map" style="width: 790px; height: 600px; color: black;"></div>
+			<script src="final.js" async defer></script>
+		    <script type="text/javascript">
+		    //<![CDATA[
+			    
+			    // Keep an array, so they can be deleted or restored later.
+			    clickPointLong = 0;
+			    clickPointLat = 0;
+			    clickRadius	 = 0;
+			    selectMode = false;
+				var infowindow;
+				var gmap;
+							
+			    function initialize() {
+			      gmap = new google.maps.Map(
+			        document.getElementById('map'), {
+			          center: new google.maps.LatLng(48, -91),
+			          zoom: 4,
+			          mapTypeId: google.maps.MapTypeId.ROADMAP
+			      });
+				  var markers = [];
+	
+				  // Add all the markers.
+					
+//https://cdn.glitch.global/5a7ba12b-99d0-438f-a3b3-12e6edf83d02/inactive.png
+//https://cdn.glitch.global/5a7ba12b-99d0-438f-a3b3-12e6edf83d02/accuracy.png
+            var unaccounted=0;
+            var count=0;
+            var accuracy=0;
+            var total=0;
+            all.forEach(function(element,index){
+              total+=1;
+              if(element[1]!=null){
+var icong='/images/avail.png';
+                count+=1;
+               mark(element[0],element[1],element[2],element[8],icong,'photo taken on '+element[10]+' by: '+element[3]);                 
+              } else{
+                unaccounted+=1;
+              }
+            });
+           document.getElementById('count').innerHTML='total locations='+total+'...unmapped locations='+unaccounted+"...mapped locations="+count;
+        
+function mark(name,lat,lng,id,icon,datenauthor){
+  //icon should be file path to image
+             var marker = new google.maps.Marker({
+                                                position: new google.maps.LatLng(Number(lat),Number(lng)),
+                                                icon: icon
+                                          });						
+                            marker.locID = id;
+                            marker.locName= name;
+                            marker.status= lat+","+lng;
+  marker.date=datenauthor;
+  marker.picW=200;
+  marker.picH=200;
+                            marker.addListener('click', handleMapClick);
+                            markers.push(marker); 
+}            
+        		
+					 var mcOptions = {gridSize: 50, maxZoom: 10};
+					 var mc = new MarkerClusterer(gmap, markers, mcOptions);	
+			
+							
+					  gmap.addListener('click', function() {
+					    if (infowindow) infowindow.close();
+					  })
+			
+			    }
+			    google.maps.event.addDomListener(window, 'load', initialize);
+				
+				
+								
+				window.onerror = function(msg, url, linenumber) {
+    alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
+    return true;
+}
+				
+				function handleMapClick() 
+				{
+				
+					// What did they click on?
+					if (this.locID != null)
+					{
+						// DISPLAY POPUP
+						
+						var nHTML =    "<SPAN CLASS=infoPop><A HREF=\"" + this.locID + "\" TARGET=\"_blank\"><SPAN CLASS=infoTitle STYLE=\"color:black;\">" + this.locName + "</A></SPAN><BR>"
+						if (parseInt(this.picW) > 0)
+						{
+							nHTML		+= "<A HREF=\"" + this.locID + "\" TARGET=\"_blank\">";
+							nHTML		+= "<IMG BORDER=0 SRC=\"" + this.locID + "\" WIDTH=\"" + this.picW + "\" HEIGHT=\"" + this.picH + "\"><BR>";
+							nHTML		+= "</A>";
+						}
+						else
+						{
+							nHTML		+= "No image is available.<BR>";
+						}
+	
+						nHTML		+= "<B>"+this.date+"</B><br><span class=infoPop><A HREF=\"https://earth.google.com/web/@"+this.status+"\" TARGET=\"_blank\">Open In Google Earth</a></span><BR>";
+						nHTML += "</SPAN>"
+						
+						if (infowindow) infowindow.close();
+						
+						infowindow = new google.maps.InfoWindow({
+										    content: nHTML
+										  });						
+											
+						
+						infowindow.open(gmap, this);
+					}
+				}
+				
+			    //]]>
+		    </script>
+		  
+				</TD>
+			</TR>
+		</TABLE>
+		</TD></TR></TABLE>
+		
+		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH="800"><TR><TD>
+		<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=4 WIDTH="100%" STYLE="border: 1px solid black;">
+			<TR>
+				<TD id="count" NOWRAP BGCOLOR="809CC9"></TD>
+			</TR>
+      <TR>
+				<TD CLASS="boxheader" NOWRAP BGCOLOR="809CC9">Legend</TD>
+			</TR>
+			<TR>
+				<TD VALIGN="TOP" CLASS="boxtextbox">
+			
+				<TABLE BORDER=0>
+					<TR>
+						<TD><IMG SRC="/images/avail.png"></TD>
+						<TD CLASS="boxtext">This location is normal.</TD>
+					
+          </TR>
+				</TABLE>
+			
+				</TD>
+			</TR>
+		</TABLE>
+		</TD></TR></TABLE>
+		
+			</TD>
+		</TR>
+	</TABLE>
+	<BR><BR>
+	<hr>
+						</TD>
+					</TR>
+				</TABLE>
+			</TD>
+		</TR>
+	</TABLE>
+	
+	
+</BODY>
+</HTML>
+
